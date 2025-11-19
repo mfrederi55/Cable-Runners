@@ -9,8 +9,9 @@ public class MainMenuManager : MonoBehaviour
 
     public enum MainMenuButtons { play, options, quit };
     public enum OptionsMenuButtons { back };
+    public enum PlayMenuButtons { host, join, back };
 
-    [SerializeField] private string _sceneAfterPlayButton;
+    [SerializeField] private GameObject _playMenuContainer;
     [SerializeField] private GameObject _optionsMenuContainer;
     [SerializeField] private GameObject _mainMenuContainer;
 
@@ -29,7 +30,7 @@ public class MainMenuManager : MonoBehaviour
         switch (buttonClicked)
         {
             case MainMenuButtons.play:
-                PlayClicked();
+                OpenMenu(_playMenuContainer);
                 break; 
             case MainMenuButtons.options:
                 OpenMenu(_optionsMenuContainer);
@@ -57,9 +58,22 @@ public class MainMenuManager : MonoBehaviour
         #endif
     }
 
-    public void PlayClicked()
+    public void PlayMenuButtonClicked(PlayMenuButtons buttonClicked)
     {
-        SceneManager.LoadScene(_sceneAfterPlayButton);
+
+        switch (buttonClicked) {
+            case PlayMenuButtons.back:
+                OpenMenu(_mainMenuContainer);
+                break;
+            case PlayMenuButtons.join:
+                GameSession.IsHost = false;
+                SceneManager.LoadScene("Gameplay");
+                break;
+            case PlayMenuButtons.host:
+                GameSession.IsHost = true;
+                SceneManager.LoadScene("Gameplay");
+                break;
+        }
     }
 
     public void OptionsMenuButtonClicked(OptionsMenuButtons buttonClicked)
@@ -76,6 +90,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenMenu(GameObject menuToOpen)
     {
+        _playMenuContainer.SetActive(menuToOpen == _playMenuContainer);
         _mainMenuContainer.SetActive(menuToOpen == _mainMenuContainer);
         _optionsMenuContainer.SetActive(menuToOpen == _optionsMenuContainer);
     }
